@@ -1297,6 +1297,26 @@ class MockRedis(object):
 
     # Script Commands #
 
+    def execute_command(self, command, name, *args):
+        if command != 'SPOP':
+            raise NotImplementedError()
+
+        if len(args) == 0:
+            return self.spop(name)
+
+        redis_set = self._get_set(name, 'SPOP')
+        if not redis_set:
+            return None
+        results = list()
+        for _ in range(args[0]):
+            member = choice(list(redis_set))
+            results.append(member)
+            redis_set.remove(member)
+
+        if len(redis_set) == 0:
+            self.delete(name)
+        return results
+
     def eval(self, script, numkeys, *keys_and_args):
         """Emulate eval"""
         sha = self.script_load(script)
