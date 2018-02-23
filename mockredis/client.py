@@ -1309,6 +1309,8 @@ class MockRedis(object):
             return None
         results = list()
         for _ in range(args[0]):
+            if len(list(redis_set)) < 1:
+                break
             member = choice(list(redis_set))
             results.append(member)
             redis_set.remove(member)
